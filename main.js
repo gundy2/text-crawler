@@ -32,23 +32,29 @@ opentype.load('./star-wars-crawl/Pathway_Gothic_One/PathwayGothicOne-Regular.ttf
   } else {
     opentypeFont = font;
     fontLoaded = true;
-    
-// --- NEW FIX: Inject into CSS FontFace ---
+
+    // Force injection into the browser's CSS font face registry
     const fontFace = new FontFace('PathwayGothic', `url('./star-wars-crawl/Pathway_Gothic_One/PathwayGothicOne-Regular.ttf')`);
+    
     fontFace.load().then((loadedFace) => {
         document.fonts.add(loadedFace);
-        console.log('Font injected into browser CSS engine');
-        
+        // CRITICAL: Wait for the document to confirm the font is ready for rendering
+        return document.fonts.ready;
+    }).then(() => {
+        console.log('Font engine fully ready');
         if (!appInitialized) {
             initializeApp();
-        } else {
-            if (textRenderer) {
-                textRenderer.setFont(font);
-                renderTextToCanvas();
-            }
+        } else if (textRenderer) {
+            // Re-inject the opentype object and force a re-render
+            textRenderer.setFont(opentypeFont);
+            renderTextToCanvas();
         }
+    }).catch(e => {
+        console.error("Font loading error:", e);
+        if (!appInitialized) initializeApp();
     });
   }
+});
 
 // Initialize after a timeout if font doesn't load
 setTimeout(() => {
@@ -189,7 +195,7 @@ function renderTextToCanvas() {
 // If it's the very first time the app opens, give it a tiny breath
   if (firstRun) {
     firstRun = false;
-    setTimeout(renderTextToCanvas, 100);
+    setTimeout(renderTextToCanvas, 300);
     return;
   }
   
@@ -489,5 +495,4 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-});
 });
