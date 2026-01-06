@@ -1,0 +1,121 @@
+body { 
+  margin: 0; 
+  overflow: hidden; 
+  background: black; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+#ui-layer {
+  position: absolute; 
+  top: 20px; 
+  left: 20px; 
+  width: 320px;
+  background: rgba(0, 0, 0, 0.9); 
+  color: #ffe81f; 
+  padding: 20px;
+  border: 2px solid #ffe81f; 
+  border-radius: 12px; 
+  z-index: 1000;
+  box-shadow: 0 0 15px rgba(255, 232, 31, 0.3);
+  max-height: calc(100vh - 40px); 
+  overflow-y: auto;
+}
+
+.field { 
+  margin-bottom: 15px; 
+}
+
+label { 
+  display: block; 
+  font-size: 11px; 
+  text-transform: uppercase; 
+  margin-bottom: 5px; 
+  letter-spacing: 1px; 
+}
+
+input, textarea { 
+  width: 100%; 
+  box-sizing: border-box; 
+  background: #111; 
+  color: #fff; 
+  border: 1px solid #444; 
+  padding: 8px; 
+  border-radius: 4px;
+}
+
+input[type="range"] { 
+  padding: 0; 
+}
+
+input[type="checkbox"] { 
+  width: auto; 
+  margin-right: 5px; 
+}
+
+.checkbox-label { 
+  display: inline; 
+  text-transform: none; 
+  font-size: 12px; 
+}
+
+button { 
+  width: 100%; 
+  padding: 12px; 
+  background: #ffe81f; 
+  color: black; 
+  border: none; 
+  cursor: pointer; 
+  font-weight: bold; 
+  border-radius: 4px; 
+  transition: 0.2s;
+  margin-top: 5px;
+}
+
+button:hover { 
+  background: #fff; 
+}
+
+button:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed; 
+}
+
+#btnRecord { 
+  background: #ff4444; 
+  color: white; 
+}
+
+#btnRecord.recording { 
+  background: #ffffff; 
+  color: #ff4444; 
+  animation: pulse 1s infinite; 
+}
+
+#btnPause { 
+  background: #4444ff; 
+  color: white; 
+}
+
+#btnReset { 
+  background: #444; 
+  color: white; 
+}
+
+.value-display { 
+  display: inline-block; 
+  float: right; 
+  font-weight: bold; 
+}
+
+@keyframes pulse { 
+  0% { opacity: 1; } 
+  50% { opacity: 0.5; } 
+  100% { opacity: 1; } 
+}
+
+@font-face {
+  font-family: 'Pathway Gothic One';
+  src: url('./star-wars-crawl/Pathway_Gothic_One/PathwayGothicOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
