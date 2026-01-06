@@ -50,13 +50,14 @@ export class TextRenderer {
     return this.measureText(' ', fontSize);
   }
 
-  /**
-   * Simple justified text without Knuth-Plass for more reliable rendering
-   */
+
+  // Method 1: renderSimpleJustified
   renderSimpleJustified(text, x, y, columnWidth, fontSize, lineHeight) {
     const words = text.trim().split(/\s+/);
     const spaceWidth = this.getSpaceWidth(fontSize);
-    const fontName = this.opentypeFont ? 'Pathway Gothic One' : this.fallbackFont;
+    
+    // Use 'PathwayGothic' (matching the FontFace name)
+    const fontName = this.opentypeFont ? 'PathwayGothic' : this.fallbackFont;
     
     this.ctx.font = `${fontSize}px ${fontName}`;
     this.ctx.fillStyle = '#ffe81f';
@@ -264,25 +265,26 @@ export class TextRenderer {
     return currentY;
   }
 
-  /**
-   * Render complete crawl text
-   */
+  // Method 2: renderCrawl
   renderCrawl(title, subtitle, body, config) {
+    // 1. CLEAR TO TRANSPARENT (Do not use fillRect with black)
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // 2. Set the global font state for this render pass
+    const fontName = this.opentypeFont ? 'PathwayGothic' : this.fallbackFont;
+    this.ctx.font = `${config.bodySize}px ${fontName}`;
+
     const {
       titleSize,
       subSize,
       bodySize,
       columnWidth,
-      useJustification,
-      justificationQuality
+      useJustification
     } = config;
 
-    // Clear canvas
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    // Set solid color
-    this.ctx.fillStyle = '#ffe81f';
-    
+    // Note: REMOVE the second clearRect/fillStyle block that was appearing 
+    // later in your provided renderCrawl code to prevent state loss.
+
     let y = 200;
     const startX = (this.canvasWidth - columnWidth) / 2;
     const lineHeight = bodySize * 1.4;
