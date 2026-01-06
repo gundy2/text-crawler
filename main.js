@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { TextRenderer } from './text-renderer.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 /* --- CONFIGURATION --- */
 const CANVAS_WIDTH = 2048;
@@ -178,6 +181,8 @@ function initializeApp() {
     tolerance: 2,
     hyphenPenalty: 50
   });
+
+  initPostProcessing(); 
   
   renderTextToCanvas();
   updatePlaneTransform();
@@ -267,6 +272,24 @@ function renderTextToCanvas() {
   crawlPlane.geometry = newGeometry;
   
   updatePlaneTransform();
+}
+
+let composer;
+
+function initPostProcessing() {
+  const renderScene = new RenderPass(scene, camera);
+
+  // Parameters: Resolution, Strength, Radius, Threshold
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.5,  // Strength: How bright the glow is
+    0.4,  // Radius: How far the glow spreads
+    0.85  // Threshold: Only things brighter than this will glow (Yellow text is bright)
+  );
+
+  composer = new EffectComposer(renderer);
+  composer.addPass(renderScene);
+  composer.addPass(bloomPass);
 }
 
 function updatePlaneTransform() {
@@ -471,8 +494,6 @@ document.getElementById('btnRecord').onclick = async () => {
 /* --- ANIMATION LOOP --- */
 function animate() {
   requestAnimationFrame(animate);
-  
-  // KEY FIX: Get delta EVERY frame to prevent time buildup
   const delta = clock.getDelta();
   
   if (!isPaused) {
@@ -484,15 +505,21 @@ function animate() {
     if (document.getElementById('inContinuous').checked && currentZ < endZ) {
       currentZ = startZ;
     }
-    
     updatePlaneTransform();
   }
-  
-  renderer.render(scene, camera);
+
+    if (composer) {
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if (composer) {
+    composer.setSize(window.innerWidth, window.innerHeight);
+  }
 });
