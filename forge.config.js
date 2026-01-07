@@ -1,8 +1,14 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: './icon'
-  },
+    icon: './icon', // Ensure there is a comma here
+    ignore: [
+      /^\/src/,
+      /^\/helpers/,
+      /^\/\.git/,
+      /^\/out/
+    ]
+  }, // This closing brace should lead into rebuildConfig
   rebuildConfig: {},
   makers: [
     {
@@ -14,9 +20,8 @@ module.exports = {
       config: {
         name: "Star Wars Crawl Studio",
         manufacturer: "CrawlStudio",
-        description: "A Star Wars style opening crawl generator.", // Add this line
-        icon: './icon.ico', // Icon for the Add/Remove Programs list
-        // This ensures the installer works on 64-bit Windows
+        description: "A Star Wars style opening crawl generator.",
+        icon: './icon.ico',
         arch: "x64" 
       }
     }
