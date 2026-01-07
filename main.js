@@ -20,40 +20,42 @@ let chunks = [];
 let columnWidth = CANVAS_WIDTH * 0.50; 
 const startY = -7;
 const startZ = 86;
-let justifyText = true;
 
 /* --- FONT LOADING --- */
 let opentypeFont = null;
 let fontLoaded = false;
 let appInitialized = false;
 
-// Load font with opentype.js
-opentype.load('./star-wars-crawl/Pathway_Gothic_One/PathwayGothicOne-Regular.ttf', (err, font) => {
+// Define the path once so it stays consistent
+const FONT_FILE_PATH = './star-wars-crawl/Pathway_Gothic_One/PathwayGothicOne-Regular.ttf';
+
+opentype.load(FONT_FILE_PATH, (err, font) => {
   if (err) {
+    console.error("Opentype failed to load font:", err);
     fontLoaded = false;
     if (!appInitialized) initializeApp();
   } else {
     opentypeFont = font;
     fontLoaded = true;
 
-    // Force injection into the browser's CSS font face registry
-    const fontFace = new FontFace('PathwayGothic', `url('./star-wars-crawl/Pathway_Gothic_One/PathwayGothicOne-Regular.ttf')`);
+    // Use the same path constant for the CSS FontFace
+    const fontFace = new FontFace('PathwayGothic', `url(${FONT_FILE_PATH})`);
     
     fontFace.load().then((loadedFace) => {
         document.fonts.add(loadedFace);
-        // CRITICAL: Wait for the document to confirm the font is ready for rendering
+        console.log("Font injected into CSS registry");
         return document.fonts.ready;
     }).then(() => {
         console.log('Font engine fully ready');
         if (!appInitialized) {
             initializeApp();
         } else if (textRenderer) {
-            // Re-inject the opentype object and force a re-render
             textRenderer.setFont(opentypeFont);
             renderTextToCanvas();
         }
     }).catch(e => {
-        console.error("Font loading error:", e);
+        console.error("Font injection error:", e);
+        // Fallback to initializing anyway so the app doesn't hang on a black screen
         if (!appInitialized) initializeApp();
     });
   }
@@ -232,15 +234,15 @@ function renderTextToCanvas() {
     subSize,
     bodySize,
     columnWidth,
-    useJustification: justifyText,
+    useJustification: true,
     justificationQuality: 2
   };
 
   try {
-    // 2. FIRST RENDER PASS
+  // 2. FIRST RENDER PASS
     let finalHeight = textRenderer.renderCrawl(title, subtitle, body, renderConfig);
 
-    // 3. AUTO-RESIZE CHECK (The "Dynamic" Fix)
+  // 3. AUTO-RESIZE CHECK (The "Dynamic" Fix)
     // If the actual text went past the canvas bottom, resize and render again.
     if (finalHeight > canvas.height) {
       console.log('Text exceeded canvas. Resizing to ' + finalHeight + ' and re-rendering.');
@@ -362,10 +364,6 @@ document.getElementById('inSpeed').oninput = (e) => {
   document.getElementById('speedVal').innerText = scrollSpeed;
 };
 
-document.getElementById('inJustify').onchange = (e) => {
-  justifyText = e.target.checked;
-};
-
 document.getElementById('inVolume').oninput = (e) => {
   const vol = parseInt(e.target.value);
   document.getElementById('volVal').innerText = vol + '%';
@@ -409,9 +407,6 @@ window.addEventListener('keydown', (e) => {
     document.getElementById('ui-layer').style.pointerEvents = "auto";
   }
 });
-
-/* --- RECORDING --- */
-// let mediaRecorder, chunks = [];
 
 /* --- RECORDING LOGIC --- */
 document.getElementById('btnRecord').onclick = async () => {
