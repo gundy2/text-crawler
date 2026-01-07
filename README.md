@@ -1,39 +1,22 @@
 # Star Wars Crawl Studio
 
-A professional-grade Windows desktop application for generating and recording custom Star Wars-style opening crawls. Built with Electron, Three.js, and Opentype.js.
+A professional-grade opening crawl generator built with Electron and Three.js. This application works entirely offline and includes a built-in screen recorder.
 
 ## Features
-- **Dynamic Text Rendering**: High-fidelity typography using Opentype.js.
-- **Auto-Sizing Canvas**: Automatically adjusts the crawl height to fit any story length.
-- **Built-in Recording**: Capture your crawl as a high-quality .webm video (VP9) with synchronized audio.
-- **Standalone Installer**: Includes a WiX-based MSI installer for Windows.
+- **Offline Ready**: All dependencies (Three.js, Fonts) are bundled locally.
+- **Justified Text**: Uses high-precision typography for that classic cinematic look.
+- **Recording**: Export your crawl directly to a video file.
+- **Customizable**: Edit titles, subtitles, and story content in real-time.
 
-## Installation
-1. Download the latest `.msi` from the releases folder.
-2. Run the installer and follow the Windows prompts.
+## Installation (Developers)
+1. Clone the repository.
+2. Run `npm install`.
+3. Start the app with `npm start`.
 
-## Development & Building
-If you want to modify the source code:
+## Building the Installer
+- To generate a Windows MSI installer:
+`npm  run make`
 
-1. **Clone the repo:**
-   ```bash
-   git clone <your-repo-url>
-Install dependencies:
-
-Bash
-
-npm install
-Run in development mode:
-
-Bash
-
-npm start
-Build the EXE and MSI:
-
-Bash
-
-npm run make
-Requirements
-Node.js: v18 or higher.
-
-WiX Toolset v3: Required to generate the MSI installer.
+## Credits
+- Built with Three.js
+- Font metrics via OpenType.js
