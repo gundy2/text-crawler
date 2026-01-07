@@ -11,7 +11,6 @@ export class TextRenderer {
     this.ctx = canvas.getContext('2d');
     this.canvasWidth = options.canvasWidth || 2048;
     this.opentypeFont = null;
-    this.fallbackFont = 'sans-serif';
     this.justifier = null;
   }
 
@@ -248,31 +247,12 @@ export class TextRenderer {
     return lines;
   }
 
-  renderSimpleWrapped(text, x, y, columnWidth, fontSize, lineHeight) {
-    const lines = this.wrapText(text, columnWidth, fontSize);
-    const fontName = this.opentypeFont ? 'Pathway Gothic One' : this.fallbackFont;
-    this.ctx.font = `${fontSize}px ${fontName}`;
-    this.ctx.textAlign = 'left';
-    this.ctx.fillStyle = '#ffe81f';
-    this.ctx.textBaseline = 'top';
-    
-    let currentY = y;
-    for (let line of lines) {
-      this.ctx.fillText(line, x, currentY);
-      currentY += lineHeight;
-    }
-    
-    return currentY;
-  }
-
   // Method 2: renderCrawl
   renderCrawl(title, subtitle, body, config) {
-    // 1. CLEAR TO TRANSPARENT (Do not use fillRect with black)
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    // 2. Set the global font state for this render pass
-    const fontName = this.opentypeFont ? 'PathwayGothic' : this.fallbackFont;
-    this.ctx.font = `${config.bodySize}px ${fontName}`;
+    this.ctx.fillStyle = 'white';
+
+    this.ctx.font = `${config.bodySize}px PathwayGothic`;
 
     const {
       titleSize,
@@ -282,61 +262,36 @@ export class TextRenderer {
       useJustification
     } = config;
 
-    // Note: REMOVE the second clearRect/fillStyle block that was appearing 
-    // later in your provided renderCrawl code to prevent state loss.
-
     let y = 200;
     const startX = (this.canvasWidth - columnWidth) / 2;
     const lineHeight = bodySize * 1.4;
 
-    // Render title
+    // --- RENDER TITLE ---
     if (title) {
+      this.ctx.font = `${titleSize}px PathwayGothic`;
       this.renderCenteredText(title, y, titleSize);
-      y += titleSize * 2;
+      y += titleSize * 2; 
     }
 
-    // Render subtitle
+    // --- RENDER SUBTITLE ---
     if (subtitle) {
+      this.ctx.font = `${subSize}px PathwayGothic`;
       this.renderCenteredText(subtitle, y, subSize);
-      y += subSize * 2.5;
+      y += subSize * 2.5; 
     }
 
-    // Render body paragraphs
+    // --- RENDER BODY ---
     const paragraphs = body.split('\n\n');
-    
     for (let para of paragraphs) {
       const trimmedPara = para.trim();
       if (!trimmedPara) continue;
 
-      if (useJustification) {
-        // Use simple justification (more reliable)
-        y = this.renderSimpleJustified(
-          trimmedPara,
-          startX,
-          y,
-          columnWidth,
-          bodySize,
-          lineHeight
-        );
-      } else {
-        // Simple wrapping without justification
-        y = this.renderSimpleWrapped(
-          trimmedPara,
-          startX,
-          y,
-          columnWidth,
-          bodySize,
-          lineHeight
-        );
-      }
+      this.ctx.font = `${bodySize}px PathwayGothic`;
 
-      // Add paragraph spacing
-      y += lineHeight * 0.5;
+      y = this.renderSimpleJustified(trimmedPara, startX, y, columnWidth, bodySize, lineHeight);
+
+      y += lineHeight * 0.8;
     }
-
-    // Add significantly more bottom padding to avoid cutoff
-    y += 1000;
-
-    return y;
+     return y;
   }
 }
